@@ -3,7 +3,6 @@ from etl.get_schedule import Schedule
 from etl.utils import df_to_tuples
 from forms import AccessCodeForm, CreateNameDropDown
 import datetime as dt
-from flask_wtf import FlaskForm
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "tylers-secret-key"
@@ -63,12 +62,12 @@ def availability():
 
     # Format table data for HTML to parse
     headings, free_time_data = df_to_tuples(free_time)
-
+    names_str = ", ".join(names)
     return render_template(
         "availability.html",
         headings=headings,
         free_time_data=free_time_data,
-        names=", ".join(names),
+        names=names_str,
         start_date=start_date,
         end_date=end_date,
     )
