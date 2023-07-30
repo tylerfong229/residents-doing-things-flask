@@ -14,7 +14,7 @@ def homepage():
     form = AccessCodeForm()
     if form.is_submitted():
         session["accesscode"] = request.form.get("accesscode")
-        return redirect(url_for("availability"))
+        return redirect(url_for("filter"))
     return render_template("home.html", form=form)
 
 
@@ -33,14 +33,10 @@ def filter():
 
     form = CreateNameDropDown(name_options)
     if form.validate_on_submit():
-        print(form.names.data)
-        start_date = request.form["start_date"]
-        end_date = request.form["end_date"]
-        print(start_date, end_date)
-
-        return render_template(
-            "success.html", data=form.names.data
-        )  ## change this to availability
+        session["start_date"] = request.form["start_date"]
+        session["end_date"] = request.form["end_date"]
+        session["names"] = form.names.data
+        return redirect(url_for("availability"))
 
     return render_template(
         "filter.html",
@@ -53,16 +49,9 @@ def filter():
 @app.route("/availability", methods=["GET", "POST"])
 def availability():
     login_code = session.get("accesscode", None)
-
-    # Set defaults
-    start_date = dt.date.today().strftime("%Y-%m-%d")
-    end_date = (dt.date.today() + dt.timedelta(14)).strftime("%Y-%m-%d")
-    names = ["Benedetto, Lauren", "Freeburg, Taylor"]
-
-    # If POST, replace defaults with user input values
-    if request.method == "POST":
-        start_date = request.form["start_date"]
-        end_date = request.form["end_date"]
+    start_date = session.get("start_date", None)
+    end_date = session.get("end_date", None)
+    names = session.get("names", None)
 
     # Filter data and pass as args into html
     free_time = Schedule().run(
@@ -79,6 +68,7 @@ def availability():
         "availability.html",
         headings=headings,
         free_time_data=free_time_data,
+        names=", ".join(names),
         start_date=start_date,
         end_date=end_date,
     )

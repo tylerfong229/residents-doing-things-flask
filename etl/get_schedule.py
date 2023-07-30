@@ -61,7 +61,7 @@ class Schedule:
             start_day=parsed_dates["start_day"],
             days=parsed_dates["days"],
         )
-        return list(raw_schedule.name.unique())
+        return list(raw_schedule.name.sort_values().unique())
 
     def parse_dates(self, start_date, end_date):
         """Converts input dates into usable data for API"""
@@ -255,6 +255,7 @@ class Schedule:
 
     def format_free_time(self, freetime: pd.DataFrame):
         """Formats dataframe for display on site"""
+        # TODO: add # of hours next to free time blocks
 
         freetime.loc[freetime["hour"] == 23, "timestamp"] = freetime["timestamp"] + pd.Timedelta(
             minutes=59
@@ -311,4 +312,5 @@ class Schedule:
                 ct += 1
 
         display_df = pd.concat(list_of_display_rows)
-        return display_df
+
+        return display_df[display_df["status"] == "FREE"].drop(columns="status")
