@@ -1,11 +1,27 @@
 {% extends "base.html" %}
 
 {% block content%}
-<div>
-    <form action="" method="POST">
-        <p>{{ form.accesscode.label }}</p>
-        <p>{{ form.accesscode(size=100) }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
-</div>
+
+<main>
+    <h1>Get started with Residents Doing Things</h1>
+    <p class="fs-5 col-md-8">Quickly and easily find times that you and your fellow residents
+        can spend doing stuff not related to work! Start by entering your amion login code:
+    </p>
+    <br>
+    <div>
+        <form action="" method="POST">
+            <p>{{ form.accesscode(size="30%", placeholder="Amion Access Code") }}</p>
+            <br>
+            <p>
+                <input type="submit" class="btn btn-primary btn-lg px-4">
+            </p>
+        </form>
+    </div>
+
+</main>
+<footer class="pt-5 my-5 text-muted border-top">
+    Created by Tyler Fong &middot; &copy; 2023
+</footer>
+
+
 {% endblock %}
