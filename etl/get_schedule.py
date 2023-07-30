@@ -74,7 +74,7 @@ class Schedule:
         days = (end_date_dt - start_date_dt).days
 
         if days < 0:
-            # Need to do error handling
+            # TODO: Need to do error handling
             pass
 
         return {
