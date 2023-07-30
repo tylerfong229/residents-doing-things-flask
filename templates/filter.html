@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div>
+    <form name="filters" action="" method="post">
+        <div>
+            <label for="start_date">Start Date:</label>
+            <input type="date" , id="start_date" name="start_date" value="{{ start_date }}" required>
+        </div>
+        <div>
+            <label for="end_date">End Date:</label>
+            <input type="date" , id="end_date" name="end_date" value="{{ end_date }}" required>
+        </div>
+        <div>
+            {{ form.hidden_tag() }}
+            {{ form.names }}
+        </div>
+        <div>
+            <input type="submit">
+        </div>
+    </form>
+</div>
+{% endblock %}
