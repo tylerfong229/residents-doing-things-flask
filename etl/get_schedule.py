@@ -33,7 +33,7 @@ class Schedule:
 
         cleaned_schedule = self.clean_schedule(schedule=raw_schedule, names=names)
 
-        free_time = self.find_free_time(
+        freetime = self.find_free_time(
             schedule=cleaned_schedule,
             start_year=parsed_dates["start_year"],
             start_month=parsed_dates["start_month"],
@@ -41,7 +41,10 @@ class Schedule:
             days=parsed_dates["days"],
             relevant_names=names,
         )
-        return free_time
+
+        formatted_freetime = self.format_free_time(freetime=freetime)
+
+        return formatted_freetime
 
     def parse_dates(self, start_date, end_date):
         """Converts input dates into usable data for API"""
@@ -232,3 +235,63 @@ class Schedule:
         work_nonwork["date"] = work_nonwork["date"].dt.date
 
         return work_nonwork[["timestamp", "date", "hour"] + relevant_names + ["free_time"]]
+
+    def format_free_time(self, freetime: pd.DataFrame):
+        """Formats dataframe for display on site"""
+
+        freetime.loc[freetime["hour"] == 23, "timestamp"] = freetime["timestamp"] + pd.Timedelta(
+            minutes=59
+        )
+        freetime["timestamp"] = freetime["timestamp"].dt.strftime("%-I:%M %p")
+        freetime = freetime.reset_index()
+        freetime_fwd = freetime.copy()
+        freetime_fwd["index"] = freetime_fwd["index"] + 1
+
+        ft = freetime.merge(
+            freetime_fwd[["index", "date", "free_time"]],
+            on="index",
+            how="left",
+            suffixes=["", "_1hr_fwd"],
+        )
+
+        ft = ft.loc[
+            (ft["date_1hr_fwd"].isnull())
+            | ((ft["date"] == ft["date_1hr_fwd"]) & (ft["free_time"] != ft["free_time_1hr_fwd"]))
+            | ((ft["hour"] == 23) & (ft["free_time"] == ft["free_time_1hr_fwd"]))
+            | (ft["hour"] == 0)
+        ][["timestamp", "date", "hour", "free_time"]]
+
+        ct = 0
+        list_of_display_rows = []
+        for row in ft.to_dict("records"):
+            if ct == 0 or row["hour"] == 0:
+                time_start = str(row["timestamp"])
+                free_at_start = row["free_time"]
+                time_end = ""
+                ct += 1
+            elif time_end == "":
+                time_end = str(row["timestamp"])
+                free_at_end = row["free_time"]
+
+                if free_at_start:
+                    status = "FREE"
+                else:
+                    status = "BUSY"
+
+                list_of_display_rows.append(
+                    pd.DataFrame(
+                        {
+                            "status": [status],
+                            "date": [str(row["date"])],
+                            "time_period": [f"{time_start} to {time_end}"],
+                        }
+                    )
+                )
+
+                free_at_start = free_at_end
+                time_start = time_end
+                time_end = ""
+                ct += 1
+
+        display_df = pd.concat(list_of_display_rows)
+        return display_df

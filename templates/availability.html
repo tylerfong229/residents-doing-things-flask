@@ -12,14 +12,6 @@
                 <label for="end_date">End Date:</label>
                 <input type="date" , id="end_date" name="end_date" value="{{ end_date }}" required>
             </div>
-            <div class="container mt-5">
-                <select class="selectpicker" multiple aria-label="Default select example" data-live-search="true">
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                    <option value="4">Four</option>
-                </select>
-            </div>
             <div>
                 <input type="submit">
             </div>
@@ -34,7 +26,7 @@
                 <th class="table__cell">{{ header }}</th>
                 {% endfor %}
             </tr>
-            {% for row in data %}
+            {% for row in free_time_data %}
             <tr class="table__row">
                 {% for cell in row%}
                 <td class="table__cell">{{ cell }}</td>
