@@ -17,7 +17,7 @@
                 data-bs-toggle="dropdown" aria-expanded="false">
                 Names
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
                 {% for name in name_options %}
                 <li class="container-sm">
                     <input type="checkbox" id="{{ name }}" name="names" value="{{ name }}">
