@@ -3,21 +3,34 @@
 {% block content%}
 <div>
     <form name="filters" action="" method="post">
+        <h2>Find a time to do something between</h2>
         <div>
-            <label for="start_date">Start Date:</label>
             <input type="date" , id="start_date" name="start_date" value="{{ start_date }}" required>
         </div>
+        <h2> and </h2>
         <div>
-            <label for="end_date">End Date:</label>
             <input type="date" , id="end_date" name="end_date" value="{{ end_date }}" required>
         </div>
-        <div>
-            {{ form.hidden_tag() }}
-            {{ form.names }}
+        <h2> with </h2>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Names
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                {% for name in name_options %}
+                <li class="container-sm">
+                    <input type="checkbox" id="{{ name }}" name="names" value="{{ name }}">
+                    <label for="{{ name }}">{{ name }}</label>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
-        <div>
-            <input type="submit">
-        </div>
+        <br>
+        <p>
+            <input type="submit" class="btn btn-primary btn-lg px-4">
+        </p>
     </form>
 </div>
+
 {% endblock %}

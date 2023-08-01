@@ -61,7 +61,8 @@ class Schedule:
             start_day=parsed_dates["start_day"],
             days=parsed_dates["days"],
         )
-        return list(raw_schedule.name.sort_values().unique())
+        names = list(raw_schedule.name.sort_values().unique())
+        return names
 
     def parse_dates(self, start_date, end_date):
         """Converts input dates into usable data for API"""

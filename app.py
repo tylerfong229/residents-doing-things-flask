@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from etl.get_schedule import Schedule
 from etl.utils import df_to_tuples
-from forms import AccessCodeForm, CreateNameDropDown
+from forms import AccessCodeForm
 import datetime as dt
+import pandas as pd
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "tylers-secret-key"
@@ -30,18 +31,17 @@ def filter():
         end_date=end_date,
     )
 
-    form = CreateNameDropDown(name_options)
-    if form.validate_on_submit():
+    if request.method == "POST":
         session["start_date"] = request.form["start_date"]
         session["end_date"] = request.form["end_date"]
-        session["names"] = form.names.data
+        session["selected_names"] = request.form.getlist("names")
         return redirect(url_for("availability"))
 
     return render_template(
         "filter.html",
-        form=form,
         start_date=start_date,
         end_date=end_date,
+        name_options=name_options,
     )
 
 
@@ -50,7 +50,7 @@ def availability():
     login_code = session.get("accesscode", None)
     start_date = session.get("start_date", None)
     end_date = session.get("end_date", None)
-    names = session.get("names", None)
+    names = session.get("selected_names", None)
 
     # Filter data and pass as args into html
     free_time = Schedule().run(
