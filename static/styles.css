@@ -15,3 +15,7 @@
     margin: 1rem;
     background-color: #f5f5f5
 }
+
+.left-padded {
+    padding: 3px 0 0 0;
+}
