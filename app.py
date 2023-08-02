@@ -77,16 +77,17 @@ def availability():
 @app.route("/hourly_availability")
 def hourly_availability():
     # TODO: Generate free time into a JSON like this
+    # TODO: implement hours next to chart (without changing chart)
     availabilities = {
         "July 10": [
-            {"start_time": 0, "end_time": 6, "display_range": "12:00AM - 6:00AM"},
-            {"start_time": 17, "end_time": 24, "display_range": "5:00PM - 11:59PM"},
+            {"start_time": 0, "end_time": 6, "display_range": "12:00AM - 6:00AM", "hours": 6},
+            {"start_time": 17, "end_time": 24, "display_range": "5:00PM - 11:59PM", "hours": 7},
         ],
         "July 11": [
-            {"start_time": 6, "end_time": 24, "display_range": "6:00PM - 11:59PM"},
+            {"start_time": 6, "end_time": 24, "display_range": "6:00PM - 11:59PM", "hours": 22},
         ],
         "July 14": [
-            {"start_time": 9, "end_time": 24, "display_range": "9:00PM - 11:59PM"},
+            {"start_time": 9, "end_time": 24, "display_range": "9:00PM - 11:59PM", "hours": 15},
         ],
     }
     hours = list(np.arange(24))
