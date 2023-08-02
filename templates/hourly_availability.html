@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div>
+    <h1>Hourly Availability</h1>
+    <br>
+    {% for date, hourly_availabilities in availabilities.items() %}
+    <table class="table table-hover">
+        <tr>
+            <th>{{ date }}</th>
+            <th></th>
+        </tr>
+        {% for avail in hourly_availabilities %}
+        <tr>
+
+            <td>{{ avail.display_range }}</td>
+            <td>
+                <div>
+                    <table style="border-radius:50px; width:300px; height: 30px;">
+                        <tr>
+                            {% for hr in hours %}
+                            {% if hr >= avail.start_time and hr <= avail.end_time %} <td
+                                style="background-color: #55DE7B;">
+            </td>
+            {% else %}
+            <td style="background-color: #E9E9E9;"></td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+</td>
+</tr>
+{% endfor %}
+</table>
+{% endfor %}
+</div>
+{% endblock %}

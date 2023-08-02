@@ -4,6 +4,7 @@ from etl.utils import df_to_tuples
 from forms import AccessCodeForm
 import datetime as dt
 import pandas as pd
+import numpy as np
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "tylers-secret-key"
@@ -70,4 +71,27 @@ def availability():
         names=names_str,
         start_date=start_date,
         end_date=end_date,
+    )
+
+
+@app.route("/hourly_availability")
+def hourly_availability():
+    # TODO: Generate free time into a JSON like this
+    availabilities = {
+        "July 10": [
+            {"start_time": 0, "end_time": 6, "display_range": "12:00AM - 6:00AM"},
+            {"start_time": 17, "end_time": 24, "display_range": "5:00PM - 11:59PM"},
+        ],
+        "July 11": [
+            {"start_time": 6, "end_time": 24, "display_range": "6:00PM - 11:59PM"},
+        ],
+        "July 14": [
+            {"start_time": 9, "end_time": 24, "display_range": "9:00PM - 11:59PM"},
+        ],
+    }
+    hours = list(np.arange(24))
+    return render_template(
+        "hourly_availability.html",
+        availabilities=availabilities,
+        hours=hours,
     )
