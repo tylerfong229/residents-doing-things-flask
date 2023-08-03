@@ -25,7 +25,7 @@ def filter():
 
     # Set defaults
     start_date = dt.date.today().strftime("%Y-%m-%d")
-    end_date = (dt.date.today() + dt.timedelta(14)).strftime("%Y-%m-%d")
+    end_date = (dt.date.today() + dt.timedelta(60)).strftime("%Y-%m-%d")
     name_options = Schedule().get_unique_names(
         login_code=login_code,
         start_date=start_date,
@@ -54,45 +54,16 @@ def availability():
     names = session.get("selected_names", None)
 
     # Filter data and pass as args into html
-    free_time = Schedule().run(
+    availabilities = Schedule().run(
         login_code=login_code,
         start_date=start_date,
         end_date=end_date,
         names=names,
     )
-
-    # Format table data for HTML to parse
-    headings, free_time_data = df_to_tuples(free_time)
-    names_str = ", ".join(names)
-    return render_template(
-        "availability.html",
-        headings=headings,
-        free_time_data=free_time_data,
-        names=names_str,
-        start_date=start_date,
-        end_date=end_date,
-    )
-
-
-@app.route("/hourly_availability")
-def hourly_availability():
-    # TODO: Generate free time into a JSON like this
-    # TODO: implement hours next to chart (without changing chart)
-    availabilities = {
-        "July 10": [
-            {"start_time": 0, "end_time": 6, "display_range": "12:00AM - 6:00AM", "hours": 6},
-            {"start_time": 17, "end_time": 24, "display_range": "5:00PM - 11:59PM", "hours": 7},
-        ],
-        "July 11": [
-            {"start_time": 6, "end_time": 24, "display_range": "6:00PM - 11:59PM", "hours": 22},
-        ],
-        "July 14": [
-            {"start_time": 9, "end_time": 24, "display_range": "9:00PM - 11:59PM", "hours": 15},
-        ],
-    }
-    hours = list(np.arange(24))
+    print(names)
     return render_template(
         "hourly_availability.html",
         availabilities=availabilities,
-        hours=hours,
+        hours=list(np.arange(24)),
+        names=names,
     )

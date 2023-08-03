@@ -2,7 +2,12 @@
 
 {% block content%}
 <div>
-    <h1>Hourly Availability</h1>
+    <h1>Hourly Availability For:</h1>
+    <ul>
+        {% for name in names %}
+        <li>{{name}}</li>
+        {% endfor %}
+    </ul>
     <br>
     {% for date, hourly_availabilities in availabilities.items() %}
     <table class="table table-hover">
@@ -20,10 +25,10 @@
                         <tr>
                             {% for hr in hours %}
                             {% if hr >= avail.start_time and hr <= avail.end_time %} <td
-                                style="background-color: #55DE7B;">
+                                style="background-color: #55DE7B; border: 1px solid black;">
             </td>
             {% else %}
-            <td style="background-color: #E9E9E9;"></td>
+            <td style="background-color: #E9E9E9; border: 1px solid black;"></td>
             {% endif %}
             {% endfor %}
         </tr>
