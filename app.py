@@ -66,4 +66,6 @@ def availability():
         availabilities=availabilities,
         hours=list(np.arange(24)),
         names=names,
+        start_date=dt.datetime.strptime(start_date, "%Y-%m-%d").strftime("%B %-d"),
+        end_date=dt.datetime.strptime(end_date, "%Y-%m-%d").strftime("%B %-d"),
     )

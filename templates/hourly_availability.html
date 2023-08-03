@@ -2,7 +2,9 @@
 
 {% block content%}
 <div>
-    <h1>Hourly Availability For:</h1>
+    <h1>Hourly availability between <span span style="color:#146DC6; font-weight: bold;">{{start_date}}</span> and
+        <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span> for:
+    </h1>
     <ul>
         {% for name in names %}
         <li>{{name}}</li>
@@ -10,7 +12,7 @@
     </ul>
     <br>
     {% for date, hourly_availabilities in availabilities.items() %}
-    <table class="table table-hover">
+    <table class="table">
         <tr>
             <th>{{ date }}</th>
             <th></th>

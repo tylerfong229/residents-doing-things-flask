@@ -32,7 +32,6 @@ class Schedule:
         )
 
         cleaned_schedule = self.clean_schedule(schedule=raw_schedule, names=names)
-
         freetime = self.find_free_time(
             schedule=cleaned_schedule,
             start_year=parsed_dates["start_year"],
@@ -41,7 +40,6 @@ class Schedule:
             days=parsed_dates["days"],
             relevant_names=names,
         )
-
         formatted_freetime = self.format_free_time(freetime=freetime)
         json_freetime = self.freetime_to_json(formatted_freetime)
         return json_freetime
@@ -324,8 +322,9 @@ class Schedule:
     def freetime_to_json(self, freetime: pd.DataFrame) -> dict:
         availabilities = {}
         prev_date = ""
+        freetime = freetime.sort_values(by="date")
         freetime["date"] = pd.to_datetime(freetime["date"]).dt.strftime("%B %-d (%A)")
-        for row in freetime.sort_values(by="date").iterrows():
+        for row in freetime.iterrows():
             r = row[1]
             hours = int(r["end_time"] - r["start_time"])
             free_time_detail = {
