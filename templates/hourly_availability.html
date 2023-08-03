@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div>
+    <h1>Hourly availability between <span span style="color:#146DC6; font-weight: bold;">{{start_date}}</span> and
+        <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span> for:
+    </h1>
+    <ul>
+        {% for name in names %}
+        <li>{{name}}</li>
+        {% endfor %}
+    </ul>
+    <br>
+    {% for date, hourly_availabilities in availabilities.items() %}
+    <table class="table">
+        <tr>
+            <th>{{ date }}</th>
+            <th></th>
+        </tr>
+        {% for avail in hourly_availabilities %}
+        <tr>
+
+            <td>{{ avail.display_range }}</td>
+            <td>
+                <div>
+                    <table style="border-radius:50px; width:300px; height: 30px;">
+                        <tr>
+                            {% for hr in hours %}
+                            {% if hr >= avail.start_time and hr <= avail.end_time %} <td
+                                style="background-color: #55DE7B; border: 1px solid black;">
+            </td>
+            {% else %}
+            <td style="background-color: #E9E9E9; border: 1px solid black;"></td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+</td>
+</tr>
+{% endfor %}
+</table>
+{% endfor %}
+</div>
+{% endblock %}

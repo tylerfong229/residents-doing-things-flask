@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
 {% block content%}
-<div>
+<div style="padding:50px 0px 0px 5px;">
     <form name="filters" action="" method="post">
         <h2>Find a time to do something between</h2>
-        <div>
+        <div style="padding:10px 0px 10px 0px;">
             <input type="date" , id="start_date" name="start_date" value="{{ start_date }}" required>
         </div>
         <h2> and </h2>
-        <div>
+        <div style="padding:10px 0px 10px 0px;">
             <input type="date" , id="end_date" name="end_date" value="{{ end_date }}" required>
         </div>
         <h2> with </h2>
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+        <div class="dropdown" style="padding:10px 0px 30px 0px;">
+            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 Names
             </button>
@@ -26,9 +26,8 @@
                 {% endfor %}
             </ul>
         </div>
-        <br>
         <p>
-            <input type="submit" class="btn btn-primary btn-lg px-4">
+            <input type="submit" class="btn btn-success btn-lg px-4">
         </p>
     </form>
 </div>

@@ -32,7 +32,6 @@ class Schedule:
         )
 
         cleaned_schedule = self.clean_schedule(schedule=raw_schedule, names=names)
-
         freetime = self.find_free_time(
             schedule=cleaned_schedule,
             start_year=parsed_dates["start_year"],
@@ -41,10 +40,9 @@ class Schedule:
             days=parsed_dates["days"],
             relevant_names=names,
         )
-
         formatted_freetime = self.format_free_time(freetime=freetime)
-
-        return formatted_freetime
+        json_freetime = self.freetime_to_json(formatted_freetime)
+        return json_freetime
 
     def get_unique_names(
         self,
@@ -286,11 +284,13 @@ class Schedule:
             if ct == 0 or row["hour"] == 0:
                 time_start = str(row["timestamp"])
                 free_at_start = row["free_time"]
+                hour_start = row["hour"]
                 time_end = ""
                 ct += 1
             elif time_end == "":
                 time_end = str(row["timestamp"])
                 free_at_end = row["free_time"]
+                hour_end = row["hour"]
 
                 if free_at_start:
                     status = "FREE"
@@ -302,6 +302,8 @@ class Schedule:
                         {
                             "status": [status],
                             "date": [str(row["date"])],
+                            "start_time": [int(hour_start)],
+                            "end_time": [int(hour_end)],
                             "time_period": [f"{time_start} to {time_end}"],
                         }
                     )
@@ -309,9 +311,32 @@ class Schedule:
 
                 free_at_start = free_at_end
                 time_start = time_end
+                hour_start = hour_end
                 time_end = ""
                 ct += 1
 
         display_df = pd.concat(list_of_display_rows)
 
         return display_df[display_df["status"] == "FREE"].drop(columns="status")
+
+    def freetime_to_json(self, freetime: pd.DataFrame) -> dict:
+        availabilities = {}
+        prev_date = ""
+        freetime = freetime.sort_values(by="date")
+        freetime["date"] = pd.to_datetime(freetime["date"]).dt.strftime("%B %-d (%A)")
+        for row in freetime.iterrows():
+            r = row[1]
+            hours = int(r["end_time"] - r["start_time"])
+            free_time_detail = {
+                "start_time": r["start_time"],
+                "end_time": r["end_time"],
+                "display_range": f"{r['time_period']} ({str(hours)} hours)",
+            }
+            if r["date"] != prev_date:
+                availabilities[r["date"]] = [free_time_detail]
+                prev_date = r["date"]
+            else:
+                availabilities[r["date"]].append(free_time_detail)
+                prev_date = r["date"]
+
+        return availabilities
