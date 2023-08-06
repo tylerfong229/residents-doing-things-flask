@@ -145,7 +145,7 @@ class Schedule:
             if len(row) > 0:
                 df_list.append(row)
         schedule_df = pd.DataFrame(df_list, columns=schedule_cols)
-
+        print(f"requested schedule from API row count: {schedule_df.shape[0]}")
         schedule_df.to_csv(cache_path, index=False)
         return schedule_df
 
