@@ -108,7 +108,7 @@ class Schedule:
         """
         current_dir = os.path.dirname(os.path.abspath(__file__))
         prev_dir = "/".join(current_dir.split("/")[:-1])
-        cache_prefix = f"/{prev_dir}/_cache"
+        cache_prefix = f"{prev_dir}/_cache"
         cache_path = f"{cache_prefix}/amion_cache_start={start_year}{start_month}{start_day}_days={days}.csv"
         print(cache_path)
         if os.path.isfile(cache_path):
