@@ -30,11 +30,14 @@ class Schedule:
             start_day=parsed_dates["start_day"],
             days=parsed_dates["days"],
         )
-        print(f"raw_schedule length: {raw_schedule.shape[0]}")
-
+        print(f"raw_schedule length: {raw_schedule.shape[0]}.  Below are the first 10 rows:")
+        print(raw_schedule.head(10))
         print("Cleaning schedule...")
         cleaned_schedule = self.clean_schedule(schedule=raw_schedule, names=names)
-        print(f"cleaned_schedule length: {cleaned_schedule.shape[0]}")
+        print(
+            f"cleaned_schedule length: {cleaned_schedule.shape[0]}.  Below are the first 10 rows:"
+        )
+        print(cleaned_schedule.head(10))
 
         print("Finding freetime...")
         freetime = self.find_free_time(
@@ -45,7 +48,8 @@ class Schedule:
             days=parsed_dates["days"],
             relevant_names=names,
         )
-        print(f"freetime length: {freetime.shape[0]}")
+        print(f"freetime length: {freetime.shape[0]}.  Below are the first 10 rows:")
+        print(freetime.head(10))
 
         print("Formatting freetime...")
         formatted_freetime = self.format_free_time(freetime=freetime)
