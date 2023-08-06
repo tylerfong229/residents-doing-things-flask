@@ -12,6 +12,7 @@ app.config["SECRET_KEY"] = "tylers-secret-key"
 
 @app.route("/", methods=["GET", "POST"])
 def homepage():
+    print("=" * 20 + " HOMEPAGE " + "=" * 20)
     form = AccessCodeForm()
     if form.is_submitted():
         session["accesscode"] = request.form.get("accesscode")
@@ -21,6 +22,7 @@ def homepage():
 
 @app.route("/filter", methods=["GET", "POST"])
 def filter():
+    print("=" * 20 + " FILTER PAGE " + "=" * 20)
     login_code = session.get("accesscode", None)
 
     # Set defaults
@@ -53,6 +55,7 @@ def filter():
 
 @app.route("/availability", methods=["GET", "POST"])
 def availability():
+    print("=" * 20 + " AVAILABILITY PAGE " + "=" * 20)
     login_code = session.get("accesscode", None)
     start_date = session.get("start_date", None)
     end_date = session.get("end_date", None)

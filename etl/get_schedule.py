@@ -30,7 +30,7 @@ class Schedule:
             start_day=parsed_dates["start_day"],
             days=parsed_dates["days"],
         )
-        print(f"raw_schedule legnth: {raw_schedule.shape[0]}")
+        print(f"raw_schedule length: {raw_schedule.shape[0]}")
 
         print("Cleaning schedule...")
         cleaned_schedule = self.clean_schedule(schedule=raw_schedule, names=names)
