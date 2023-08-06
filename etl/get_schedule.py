@@ -221,6 +221,9 @@ class Schedule:
         )
 
         # Find which hours are busy or free for each name
+        # TODO: handle cases where name is not in schedule
+        #       could mean theyre on vacation or that scheduler hasn't input their schedule
+        #       - Assumption should be that they are free the whole time (note assumption in output)
         working_hours = schedule.copy()
         working_hours["start_time"] = pd.to_datetime(working_hours["start_time"])
         working_hours["end_time"] = pd.to_datetime(working_hours["end_time"])
@@ -239,6 +242,14 @@ class Schedule:
             .pivot_table(index="working_hour", columns="name", values="working")
             .reset_index()
         )
+        final_relevant_names = []
+        for name in relevant_names:
+            if name not in working_hours.columns:
+                updated_name = f"{name} (No working hours in schedule during date range)"
+                working_hours[updated_name] = 0
+                final_relevant_names.append(updated_name)
+            else:
+                final_relevant_names.append(name)
 
         work_nonwork = scope.merge(
             working_hours,
@@ -247,7 +258,7 @@ class Schedule:
             right_on="working_hour",
         ).fillna(0)
 
-        for name in relevant_names:
+        for name in final_relevant_names:
             if "working_ct" not in work_nonwork.columns:
                 work_nonwork["working_ct"] = work_nonwork[name]
             else:
