@@ -32,9 +32,15 @@ def filter():
     )
 
     if request.method == "POST":
-        session["start_date"] = request.form["start_date"]
-        session["end_date"] = request.form["end_date"]
-        session["selected_names"] = request.form.getlist("names")
+        start_date = request.form["start_date"]
+        end_date = request.form["end_date"]
+        names = request.form.getlist("names")
+        session["start_date"] = start_date
+        session["end_date"] = end_date
+        session["selected_names"] = names
+        print(f"start_date: {start_date}")
+        print(f"end_date: {end_date}")
+        print(f"selected_names: {names}")
         return redirect(url_for("availability"))
 
     return render_template(

@@ -22,7 +22,7 @@ class Schedule:
             return pd.DataFrame({"name": ["None Selected"]})
 
         parsed_dates = self.parse_dates(start_date=start_date, end_date=end_date)
-
+        print("Getting raw_schedule...")
         raw_schedule = self.get_raw_schedule(
             login_code=login_code,
             start_year=parsed_dates["start_year"],
@@ -30,8 +30,13 @@ class Schedule:
             start_day=parsed_dates["start_day"],
             days=parsed_dates["days"],
         )
+        print(f"raw_schedule legnth: {raw_schedule.shape[0]}")
 
+        print("Cleaning schedule...")
         cleaned_schedule = self.clean_schedule(schedule=raw_schedule, names=names)
+        print(f"cleaned_schedule length: {cleaned_schedule.shape[0]}")
+
+        print("Finding freetime...")
         freetime = self.find_free_time(
             schedule=cleaned_schedule,
             start_year=parsed_dates["start_year"],
@@ -40,6 +45,9 @@ class Schedule:
             days=parsed_dates["days"],
             relevant_names=names,
         )
+        print(f"freetime length: {freetime.shape[0]}")
+
+        print("Formatting freetime...")
         formatted_freetime = self.format_free_time(freetime=freetime)
         json_freetime = self.freetime_to_json(formatted_freetime)
         return json_freetime
