@@ -25,11 +25,10 @@ def filter():
 
     # Set defaults
     start_date = dt.date.today().strftime("%Y-%m-%d")
-    end_date = (dt.date.today() + dt.timedelta(60)).strftime("%Y-%m-%d")
     name_options = Schedule().get_unique_names(
         login_code=login_code,
         start_date=start_date,
-        end_date=end_date,
+        end_date=(start_date + dt.timedelta(90)).strftime("%Y-%m-%d"),
     )
 
     if request.method == "POST":
@@ -41,7 +40,7 @@ def filter():
     return render_template(
         "filter.html",
         start_date=start_date,
-        end_date=end_date,
+        end_date=(start_date + dt.timedelta(14)).strftime("%Y-%m-%d"),
         name_options=name_options,
     )
 
