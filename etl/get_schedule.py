@@ -349,7 +349,8 @@ class Schedule:
             free_time_detail = {
                 "start_time": r["start_time"],
                 "end_time": r["end_time"],
-                "display_range": f"{r['time_period']} ({str(hours)} hours)",
+                "display_time_range": f"{r['time_period']}",
+                "display_hour_range": f"({str(hours)} hours)",
             }
             if r["date"] != prev_date:
                 availabilities[r["date"]] = [free_time_detail]
