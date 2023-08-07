@@ -150,7 +150,9 @@ class Schedule:
                 df_list.append(row)
         schedule_df = pd.DataFrame(df_list, columns=schedule_cols)
         print(f"requested schedule from API row count: {schedule_df.shape[0]}")
-        schedule_df.to_csv(cache_path, index=False)
+        outfile = open(cache_path, "wb")
+        schedule_df.to_csv(outfile)
+        outfile.close()
         return schedule_df
 
     def clean_schedule(self, schedule: pd.DataFrame, names: list) -> pd.DataFrame:
