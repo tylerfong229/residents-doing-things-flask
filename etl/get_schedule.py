@@ -319,8 +319,8 @@ class Schedule:
                         {
                             "status": [status],
                             "date": [str(row["date"])],
-                            "start_time": [int(hour_start)],
-                            "end_time": [int(hour_end)],
+                            "start_time": [int(round(hour_start))],
+                            "end_time": [int(round(hour_end))],
                             "time_period": [f"{time_start} to {time_end}"],
                         }
                     )
@@ -340,9 +340,11 @@ class Schedule:
         availabilities = {}
         prev_date = ""
         freetime = freetime.sort_values(by="date")
-        freetime["date"] = pd.to_datetime(freetime["date"]).dt.strftime("%B %-d (%A)")
+        freetime["date"] = pd.to_datetime(freetime["date"]).dt.strftime("%b %-d (%a)")
         for row in freetime.iterrows():
             r = row[1]
+            if r["end_time"] == 23:
+                r["end_time"] = 24
             hours = int(r["end_time"] - r["start_time"])
             free_time_detail = {
                 "start_time": r["start_time"],

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content%}
-<div>
+<div class="container px-4">
     <h1>Hourly availability between <span span style="color:#146DC6; font-weight: bold;">{{start_date}}</span> and
         <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span> for:
     </h1>
@@ -23,7 +23,7 @@
             <td>{{ avail.display_range }}</td>
             <td>
                 <div>
-                    <table style="border-radius:50px; width:300px; height: 30px;">
+                    <table style="border-radius:50px; width:110%; height: 30px;">
                         <tr>
                             {% for hr in hours %}
                             {% if hr >= avail.start_time and hr <= avail.end_time %} <td
