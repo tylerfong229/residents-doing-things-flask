@@ -21,7 +21,6 @@ class Schedule:
         # TODO: Handle no names
         login_code = login_code.lower()
         parsed_dates = self.parse_dates(start_date=start_date, end_date=end_date)
-        print("Getting raw_schedule...")
         raw_schedule = self.get_raw_schedule(
             login_code=login_code,
             start_year=parsed_dates["start_year"],
@@ -29,16 +28,7 @@ class Schedule:
             start_day=parsed_dates["start_day"],
             days=parsed_dates["days"],
         )
-        print(f"raw_schedule length: {raw_schedule.shape[0]}.  Below are the first 10 rows:")
-        print(raw_schedule.head(10))
-        print("Cleaning schedule...")
         cleaned_schedule = self.clean_schedule(schedule=raw_schedule, names=names)
-        print(
-            f"cleaned_schedule length: {cleaned_schedule.shape[0]}.  Below are the first 10 rows:"
-        )
-        print(cleaned_schedule.head(10))
-
-        print("Finding freetime...")
         freetime, final_relevant_names = self.find_free_time(
             schedule=cleaned_schedule,
             start_year=parsed_dates["start_year"],
@@ -47,10 +37,6 @@ class Schedule:
             days=parsed_dates["days"],
             relevant_names=names,
         )
-        print(f"freetime length: {freetime.shape[0]}.  Below are the first 10 rows:")
-        print(freetime.head(10))
-
-        print("Formatting freetime...")
         formatted_freetime = self.format_free_time(freetime=freetime)
         json_freetime = self.freetime_to_json(formatted_freetime)
         return json_freetime, final_relevant_names
@@ -131,8 +117,6 @@ class Schedule:
         print(f"url: {url}")
         response = requests.get(url=url, headers={"Connection": "close"})
         raw_schedule_list = response.text.split("\n")[6:]
-        print("raw_schedule:")
-        print(raw_schedule_list)
 
         schedule_cols = [
             "name",
