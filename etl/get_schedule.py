@@ -129,6 +129,7 @@ class Schedule:
 
         url_prefix = "http://www.amion.com/cgi-bin/ocs?"
         url = f"{url_prefix}Lo={login_code}&Rpt=619&Day={str(start_day)}&Month={str(start_month)}&Year={str(start_year)}&Days={str(days)}"
+        print(f"url: {url}")
         response = requests.get(url=url, headers={"Connection": "close"})
         raw_schedule_list = response.text.split("\n")[6:]
         print("raw_schedule:")
