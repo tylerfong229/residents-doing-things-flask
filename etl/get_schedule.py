@@ -18,9 +18,8 @@ class Schedule:
         names: list,
     ):
         """Controller method to be called by model"""
-        if len(names) == 0:
-            return pd.DataFrame({"name": ["None Selected"]})
-
+        # TODO: Handle no names
+        login_code = login_code.lower()
         parsed_dates = self.parse_dates(start_date=start_date, end_date=end_date)
         print("Getting raw_schedule...")
         raw_schedule = self.get_raw_schedule(
