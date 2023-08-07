@@ -40,7 +40,7 @@ class Schedule:
         print(cleaned_schedule.head(10))
 
         print("Finding freetime...")
-        freetime = self.find_free_time(
+        freetime, final_relevant_names = self.find_free_time(
             schedule=cleaned_schedule,
             start_year=parsed_dates["start_year"],
             start_month=parsed_dates["start_month"],
@@ -54,7 +54,7 @@ class Schedule:
         print("Formatting freetime...")
         formatted_freetime = self.format_free_time(freetime=freetime)
         json_freetime = self.freetime_to_json(formatted_freetime)
-        return json_freetime
+        return json_freetime, final_relevant_names
 
     def get_unique_names(
         self,
@@ -276,7 +276,10 @@ class Schedule:
         )
         work_nonwork["date"] = work_nonwork["date"].dt.date
 
-        return work_nonwork[["timestamp", "date", "hour"] + relevant_names + ["free_time"]]
+        return (
+            work_nonwork[["timestamp", "date", "hour"] + final_relevant_names + ["free_time"]],
+            final_relevant_names,
+        )
 
     def format_free_time(self, freetime: pd.DataFrame):
         """Formats dataframe for display on site"""

@@ -62,18 +62,19 @@ def availability():
     names = session.get("selected_names", None)
 
     # Filter data and pass as args into html
-    availabilities = Schedule().run(
+    availabilities, final_relevant_names = Schedule().run(
         login_code=login_code,
         start_date=start_date,
         end_date=end_date,
         names=names,
     )
     print(names)
+    print(availabilities)
     return render_template(
         "hourly_availability.html",
         availabilities=availabilities,
         hours=list(np.arange(24)),
-        names=names,
+        names=final_relevant_names,
         start_date=dt.datetime.strptime(start_date, "%Y-%m-%d").strftime("%B %-d"),
         end_date=dt.datetime.strptime(end_date, "%Y-%m-%d").strftime("%B %-d"),
     )
