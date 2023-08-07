@@ -131,6 +131,8 @@ class Schedule:
         url = f"{url_prefix}Lo={login_code}&Rpt=619&Day={str(start_day)}&Month={str(start_month)}&Year={str(start_year)}&Days={str(days)}"
         response = requests.get(url)
         raw_schedule_list = response.text.split("\n")[6:]
+        print("raw_schedule:")
+        print(raw_schedule_list)
 
         schedule_cols = [
             "name",
