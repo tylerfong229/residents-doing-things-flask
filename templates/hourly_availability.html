@@ -31,7 +31,47 @@
         </div>
         <div class="collapse" id="collapseFilters">
             <div class="card card-body">
-                Filters
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <form name="filters" action="#" method="post">
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Start Time
+                            </button>
+                            <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
+                                {% for display_time, military_hr in possible_hours.items() %}
+                                <li class="container-sm">
+                                    <input type="radio" id="{{military_hr}}" name="start_time" value="{{military_hr}}">
+                                    <label for="{{military_hr}}">{{display_time}}</label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="Second group">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                End Time
+                            </button>
+                            <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
+                                {% for display_time, military_hr in possible_hours.items() %}
+                                <li class="container-sm">
+                                    <input type="radio" id="{{military_hr}}" name="end_time" value="{{military_hr}}">
+                                    <label for="{{military_hr}}">{{display_time}}</label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="Third group">
+                            <button type="submit" class="btn btn-success">Refresh</button>
+                        </div>
+                    </form>
+                </div>
+
+
+
+
+
+
             </div>
         </div>
 
