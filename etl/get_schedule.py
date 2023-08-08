@@ -16,6 +16,8 @@ class Schedule:
         start_date: str,
         end_date: str,
         names: list,
+        start_time: str = "0",
+        end_time: str = "24",
     ):
         """Controller method to be called by model"""
         # TODO: Handle no names
@@ -36,6 +38,8 @@ class Schedule:
             start_day=parsed_dates["start_day"],
             days=parsed_dates["days"],
             relevant_names=names,
+            start_time=int(start_time),
+            end_time=int(end_time),
         )
         formatted_freetime = self.format_free_time(freetime=freetime)
         json_freetime = self.freetime_to_json(formatted_freetime)
@@ -195,6 +199,8 @@ class Schedule:
         start_day: int,
         days: int,
         relevant_names: list,
+        start_time: int,
+        end_time: int,
     ) -> pd.DataFrame:
         """Identifies which hours people are working and not working"""
 
@@ -252,17 +258,26 @@ class Schedule:
             else:
                 work_nonwork["working_ct"] += work_nonwork[name]
 
-        # Tag rows
-        free_condition = work_nonwork["working_ct"] == 0
-        work_nonwork["free_time"] = False
-        work_nonwork.loc[free_condition, "free_time"] = True
-
         # Cleanup
         work_nonwork["timestamp"] = work_nonwork["date"]
         work_nonwork["hour"] = (
             work_nonwork["date"].dt.strftime("%H:%M").str.split(":").str[0].astype(int)
         )
         work_nonwork["date"] = work_nonwork["date"].dt.date
+
+        # Apply filter selected on start and end time to look for:
+        work_nonwork.loc[
+            (
+                ((work_nonwork["hour"] < start_time) | (work_nonwork["hour"] > end_time))
+                & (work_nonwork["working_ct"] == 0)
+            ),
+            "working_ct",
+        ] = 1
+
+        # Tag rows
+        free_condition = work_nonwork["working_ct"] == 0
+        work_nonwork["free_time"] = False
+        work_nonwork.loc[free_condition, "free_time"] = True
 
         return (
             work_nonwork[["timestamp", "date", "hour"] + final_relevant_names + ["free_time"]],
@@ -358,5 +373,4 @@ class Schedule:
             else:
                 availabilities[r["date"]].append(free_time_detail)
                 prev_date = r["date"]
-
         return availabilities

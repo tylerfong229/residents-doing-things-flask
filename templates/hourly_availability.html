@@ -5,19 +5,76 @@
     <!-- header section -->
     <div class="row">
         <h1>Hourly availability between <span span style="color:#146DC6; font-weight: bold;">{{start_date}}</span> and
-            <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span> for
+            <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span>.
         </h1>
 
-        <div class="container-fluid py-2">
-            <div class="d-flex overflow-scroll">
-                {% for name in names %}
-                <div style="min-width: 150px; min-height: 80px; padding-right: 5px;">
-                    <div style="text-align: center;"><span style="font-size: 40px;">&#128526;</span></div>
-                    <div style="text-align: center;"><span style="font-size: 14px;"><b>{{name}}</b></span></div>
-                </div>
-                {% endfor %}
+        <p>
+            <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseSelectedNames" role="button"
+                aria-expanded="false" aria-controls="collapseSelectedNames">
+                Selected Names
+            </a>
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters"
+                aria-expanded="false" aria-controls="collapseFilters">
+                Filters
+            </button>
+        </p>
+        <div class="collapse" id="collapseSelectedNames">
+            <div class="card card-body">
+                <table class="table">
+                    {% for name in names %}
+                    <tr>
+                        <td>{{name}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
+        <div class="collapse" id="collapseFilters">
+            <div class="card card-body">
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <form name="filters" action="#" method="post">
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Start Time
+                            </button>
+                            <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
+                                {% for display_time, military_hr in possible_hours.items() %}
+                                <li class="container-sm">
+                                    <input type="radio" id="{{military_hr}}" name="start_time" value="{{military_hr}}">
+                                    <label for="{{military_hr}}">{{display_time}}</label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="Second group">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                End Time
+                            </button>
+                            <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
+                                {% for display_time, military_hr in possible_hours.items() %}
+                                <li class="container-sm">
+                                    <input type="radio" id="{{military_hr}}" name="end_time" value="{{military_hr}}">
+                                    <label for="{{military_hr}}">{{display_time}}</label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="Third group">
+                            <button type="submit" class="btn btn-success">Refresh</button>
+                        </div>
+                    </form>
+                </div>
+
+
+
+
+
+
+            </div>
+        </div>
+
     </div>
 
     <br>
@@ -59,4 +116,6 @@
 
 </div>
 </div>
+<br>
+<br>
 {% endblock %}

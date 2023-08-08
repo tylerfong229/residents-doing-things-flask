@@ -5,6 +5,7 @@ from forms import AccessCodeForm
 import datetime as dt
 import pandas as pd
 import numpy as np
+from utils.constants import Constants
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "tylers-secret-key"
@@ -60,16 +61,22 @@ def availability():
     start_date = session.get("start_date", None)
     end_date = session.get("end_date", None)
     names = session.get("selected_names", None)
+    start_time = 0
+    end_time = 24
+
+    if request.method == "POST":
+        start_time = request.form["start_time"]
+        end_time = request.form["end_time"]
 
     # Filter data and pass as args into html
     availabilities, final_relevant_names = Schedule().run(
         login_code=login_code,
         start_date=start_date,
         end_date=end_date,
+        start_time=start_time,
+        end_time=end_time,
         names=names,
     )
-    print(names)
-    print(availabilities)
     return render_template(
         "hourly_availability.html",
         availabilities=availabilities,
@@ -77,4 +84,5 @@ def availability():
         names=final_relevant_names,
         start_date=dt.datetime.strptime(start_date, "%Y-%m-%d").strftime("%B %-d"),
         end_date=dt.datetime.strptime(end_date, "%Y-%m-%d").strftime("%B %-d"),
+        possible_hours=Constants().possible_hours,
     )
