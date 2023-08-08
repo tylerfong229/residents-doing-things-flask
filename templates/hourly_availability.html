@@ -5,20 +5,38 @@
     <!-- header section -->
     <div class="row">
         <h1>Hourly availability between <span span style="color:#146DC6; font-weight: bold;">{{start_date}}</span> and
-            <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span> for
+            <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span>.
         </h1>
 
-        <div class="container-fluid py-2">
-            <div class="d-flex overflow-scroll">
-                {% for name in names %}
-                <div style="min-width: 150px; min-height: 80px; padding-right: 5px;">
-                    <div style="text-align: center;"><span style="font-size: 40px;">&#128526;</span></div>
-                    <div style="text-align: center;"><span style="font-size: 14px;"><b>{{name}}</b></span></div>
-                </div>
-                {% endfor %}
+        <p>
+            <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseSelectedNames" role="button"
+                aria-expanded="false" aria-controls="collapseSelectedNames">
+                Selected Names
+            </a>
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters"
+                aria-expanded="false" aria-controls="collapseFilters">
+                Filters
+            </button>
+        </p>
+        <div class="collapse" id="collapseSelectedNames">
+            <div class="card card-body">
+                <table class="table">
+                    {% for name in names %}
+                    <tr>
+                        <td>{{name}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
+        <div class="collapse" id="collapseFilters">
+            <div class="card card-body">
+                Filters
+            </div>
+        </div>
+
     </div>
+
 
     <br>
     <!-- hourly availability section -->
@@ -59,4 +77,6 @@
 
 </div>
 </div>
+<br>
+<br>
 {% endblock %}
