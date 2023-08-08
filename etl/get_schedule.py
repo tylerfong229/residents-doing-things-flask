@@ -233,7 +233,7 @@ class Schedule:
         final_relevant_names = []
         for name in relevant_names:
             if name not in working_hours.columns:
-                updated_name = f"{name} (No working hours in schedule during date range)"
+                updated_name = f"{name} \n (no scheduled working hours)"
                 working_hours[updated_name] = 0
                 final_relevant_names.append(updated_name)
             else:

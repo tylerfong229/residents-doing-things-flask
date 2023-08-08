@@ -1,45 +1,55 @@
 {% extends "base.html" %}
 
 {% block content%}
-<div class="container px-4">
+<div class="container px-4" style="height: 100vh;">
     <h1>Hourly availability between <span span style="color:#146DC6; font-weight: bold;">{{start_date}}</span> and
-        <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span> for:
+        <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span> for
     </h1>
-    <ul>
-        {% for name in names %}
-        <li>{{name}}</li>
-        {% endfor %}
-    </ul>
-    <br>
-    {% for date, hourly_availabilities in availabilities.items() %}
-    <table class="table">
-        <tr>
-            <th>{{ date }}</th>
-            <th></th>
-        </tr>
-        {% for avail in hourly_availabilities %}
-        <tr>
 
-            <td>{{ avail.display_time_range }} <br> {{ avail.display_hour_range }}</td>
-            <td>
-                <div>
-                    <table style="border-radius:50px; width:110%; height: 30px;">
-                        <tr>
-                            {% for hr in hours %}
-                            {% if hr >= avail.start_time and hr <= avail.end_time %} <td
-                                style="background-color: #55DE7B; border: 1px solid black;">
-            </td>
-            {% else %}
-            <td style="background-color: #E9E9E9; border: 1px solid black;"></td>
-            {% endif %}
+    <div class="container-fluid py-2">
+        <div class="d-flex overflow-scroll">
+            {% for name in names %}
+            <div style="min-width: 150px; min-height: 80px; padding-right: 5px;">
+                <div style="text-align: center;"><span style="font-size: 40px;">&#128526;</span></div>
+                <div style="text-align: center;"><span style="font-size: 14px;"><b>{{name}}</b></span></div>
+            </div>
             {% endfor %}
-        </tr>
+        </div>
+    </div>
+
+    <br>
+    <div style="overflow: auto;">
+        {% for date, hourly_availabilities in availabilities.items() %}
+
+        <table class="table">
+            <tr>
+                <th>{{ date }}</th>
+                <th></th>
+            </tr>
+            {% for avail in hourly_availabilities %}
+            <tr>
+
+                <td>{{ avail.display_time_range }} <br> {{ avail.display_hour_range }}</td>
+                <td>
+                    <div>
+                        <table style="border-radius:50px; width:100%; height: 30px;">
+                            <tr>
+                                {% for hr in hours %}
+                                {% if hr >= avail.start_time and hr <= avail.end_time %} <td
+                                    style="background-color: #55DE7B; border: 1px solid black;">
+                </td>
+                {% else %}
+                <td style="background-color: #E9E9E9; border: 1px solid black;"></td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+    </td>
+    </tr>
+    {% endfor %}
     </table>
+    {% endfor %}
 </div>
-</td>
-</tr>
-{% endfor %}
-</table>
-{% endfor %}
 </div>
 {% endblock %}
