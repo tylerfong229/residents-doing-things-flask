@@ -21,7 +21,6 @@ class Schedule:
     ):
         """Controller method to be called by model"""
         # TODO: Handle no names
-        login_code = login_code.lower()
         parsed_dates = self.parse_dates(start_date=start_date, end_date=end_date)
         raw_schedule = self.get_raw_schedule(
             login_code=login_code,

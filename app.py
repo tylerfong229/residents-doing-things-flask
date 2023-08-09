@@ -17,7 +17,7 @@ def homepage():
     form = AccessCodeForm()
     error_message = ""
     if form.is_submitted():
-        login_code = request.form.get("accesscode")
+        login_code = request.form.get("accesscode").lower()
         session["accesscode"] = login_code
         if Schedule().validate_login_code(login_code=login_code):
             return redirect(url_for("filter"))
