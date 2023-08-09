@@ -11,11 +11,11 @@
         <p>
             <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseSelectedNames" role="button"
                 aria-expanded="false" aria-controls="collapseSelectedNames">
-                Selected Names
+                Invite List
             </a>
             <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters"
                 aria-expanded="false" aria-controls="collapseFilters">
-                Filters
+                Filter Times
             </button>
         </p>
         <div class="collapse" id="collapseSelectedNames">
@@ -28,7 +28,8 @@
                     {% endfor %}
 
                 </table>
-                <p class="fw-lighter">* No hours entered in Amion during the selected dates</p>
+                <p class="fw-lighter">* This user has no scheduled shifts in Amion, which could mean this user is 1) on
+                    vacation (yay!) or 2) on an elective.</p>
             </div>
         </div>
         <div class="collapse" id="collapseFilters">
