@@ -63,6 +63,12 @@ class Schedule:
         names = list(raw_schedule.name.sort_values().unique())
         return names
 
+    def validate_login_code(self, login_code: str):
+        url_prefix = "http://www.amion.com/cgi-bin/ocs?"
+        url = f"{url_prefix}Lo={login_code}&Rpt=619"
+        response = requests.get(url=url, headers={"Connection": "close"})
+        return "bad password" not in response.text.lower()
+
     def parse_dates(self, start_date, end_date):
         """Converts input dates into usable data for API"""
         start_date_dt = dt.datetime.strptime(start_date, "%Y-%m-%d")
