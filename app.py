@@ -15,10 +15,15 @@ app.config["SECRET_KEY"] = "tylers-secret-key"
 def homepage():
     print("=" * 20 + " HOMEPAGE " + "=" * 20)
     form = AccessCodeForm()
+    error_message = ""
     if form.is_submitted():
-        session["accesscode"] = request.form.get("accesscode")
-        return redirect(url_for("filter"))
-    return render_template("home.html", form=form)
+        login_code = request.form.get("accesscode")
+        session["accesscode"] = login_code
+        if Schedule().validate_login_code(login_code=login_code):
+            return redirect(url_for("filter"))
+        error_message = f"The access code {login_code} is not a valid Amion Access Code"
+
+    return render_template("home.html", form=form, error_message=error_message)
 
 
 @app.route("/filter", methods=["GET", "POST"])
@@ -77,6 +82,10 @@ def availability():
         end_time=end_time,
         names=names,
     )
+
+    if len(availabilities) == 0:
+        return redirect(url_for("no_freetime"))
+
     return render_template(
         "hourly_availability.html",
         availabilities=availabilities,
@@ -86,3 +95,8 @@ def availability():
         end_date=dt.datetime.strptime(end_date, "%Y-%m-%d").strftime("%B %-d"),
         possible_hours=Constants().possible_hours,
     )
+
+
+@app.route("/no_freetime", methods=["GET", "POST"])
+def no_freetime():
+    return render_template("no_freetime.html")

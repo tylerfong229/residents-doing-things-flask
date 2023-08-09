@@ -63,6 +63,12 @@ class Schedule:
         names = list(raw_schedule.name.sort_values().unique())
         return names
 
+    def validate_login_code(self, login_code: str):
+        url_prefix = "http://www.amion.com/cgi-bin/ocs?"
+        url = f"{url_prefix}Lo={login_code}&Rpt=619"
+        response = requests.get(url=url, headers={"Connection": "close"})
+        return "bad password" not in response.text.lower()
+
     def parse_dates(self, start_date, end_date):
         """Converts input dates into usable data for API"""
         start_date_dt = dt.datetime.strptime(start_date, "%Y-%m-%d")
@@ -214,32 +220,33 @@ class Schedule:
             columns=["date"],
         )
 
-        # Find which hours are busy or free for each name
-        # TODO: handle cases where name is not in schedule
-        #       could mean theyre on vacation or that scheduler hasn't input their schedule
-        #       - Assumption should be that they are free the whole time (note assumption in output)
-        working_hours = schedule.copy()
-        working_hours["start_time"] = pd.to_datetime(working_hours["start_time"])
-        working_hours["end_time"] = pd.to_datetime(working_hours["end_time"])
-        working_hours["hour"] = working_hours.apply(
-            lambda row: pd.date_range(row["start_time"], row["end_time"], freq="H"), axis=1
-        )
+        # If schedule is empty for selected dates then all times are free
+        if schedule.shape[0] == 0:
+            working_hours = pd.DataFrame({"working_hour": []})
+        else:
+            working_hours = schedule.copy()
+            working_hours["start_time"] = pd.to_datetime(working_hours["start_time"])
+            working_hours["end_time"] = pd.to_datetime(working_hours["end_time"])
+            print(working_hours)
+            working_hours["hour"] = working_hours.apply(
+                lambda row: pd.date_range(row["start_time"], row["end_time"], freq="H"), axis=1
+            )
 
-        working_hours = (
-            working_hours.explode("hour")
-            .reset_index()
-            .drop(columns=["start_time", "end_time"])
-            .rename(columns={"hour": "working_hour"})
-            .set_index("working_hour")
-            .reset_index()[["name", "working_hour"]]
-            .assign(working=1)
-            .pivot_table(index="working_hour", columns="name", values="working")
-            .reset_index()
-        )
+            working_hours = (
+                working_hours.explode("hour")
+                .reset_index()
+                .drop(columns=["start_time", "end_time"])
+                .rename(columns={"hour": "working_hour"})
+                .set_index("working_hour")
+                .reset_index()[["name", "working_hour"]]
+                .assign(working=1)
+                .pivot_table(index="working_hour", columns="name", values="working")
+                .reset_index()
+            )
         final_relevant_names = []
         for name in relevant_names:
             if name not in working_hours.columns:
-                updated_name = f"{name} \n (no scheduled working hours)"
+                updated_name = f"{name}*"
                 working_hours[updated_name] = 0
                 final_relevant_names.append(updated_name)
             else:
