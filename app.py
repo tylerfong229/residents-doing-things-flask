@@ -95,8 +95,3 @@ def availability():
 @app.route("/no_freetime", methods=["GET", "POST"])
 def no_freetime():
     return render_template("no_freetime.html")
-
-
-@app.route("/no_names_selected", methods=["GET", "POST"])
-def no_names_selected():
-    return render_template("no_names_selected.html")

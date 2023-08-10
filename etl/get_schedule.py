@@ -76,8 +76,6 @@ class Schedule:
         if os.path.isfile(cache_path):
             print(f"reading from cache at {cache_path}")
             cache_df = pd.read_csv(cache_path)
-            print("Cache Dataframe:")
-            print(cache_df.date.unique())
             return cache_df
 
         schedule_df = request_amion(
@@ -140,8 +138,6 @@ class Schedule:
             schedule_no_ids["start_time"] >= schedule_no_ids["end_time"], "end_time"
         ] = schedule_no_ids["end_time"] + dt.timedelta(days=1)
         schedule_no_ids = schedule_no_ids[["name", "team", "start_time", "end_time"]]
-        print("\nFormatted Schedule:")
-        print(schedule_no_ids)
         return schedule_no_ids
 
     def find_free_time(
@@ -174,7 +170,6 @@ class Schedule:
             working_hours = schedule.copy()
             working_hours["start_time"] = pd.to_datetime(working_hours["start_time"])
             working_hours["end_time"] = pd.to_datetime(working_hours["end_time"])
-            print(working_hours)
             working_hours["hour"] = working_hours.apply(
                 lambda row: pd.date_range(row["start_time"], row["end_time"], freq="H"), axis=1
             )
