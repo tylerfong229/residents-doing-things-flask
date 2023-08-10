@@ -93,6 +93,8 @@ def availability():
         start_date=dt.datetime.strptime(start_date, "%Y-%m-%d").strftime("%B %-d"),
         end_date=dt.datetime.strptime(end_date, "%Y-%m-%d").strftime("%B %-d"),
         possible_hours=Constants().possible_hours,
+        start_time=int(start_time),
+        end_time=int(end_time),
     )
 
 
