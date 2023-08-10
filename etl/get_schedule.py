@@ -1,8 +1,7 @@
 import pandas as pd
-from typing import Tuple
+
 import datetime as dt
-import os
-from etl.utils import parse_dates, request_amion, get_cache_path
+from etl.utils import parse_dates, get_schedule
 
 
 class Schedule:
@@ -24,7 +23,7 @@ class Schedule:
 
         # Find availability if names selected
         parsed_dates = parse_dates(start_date=start_date, end_date=end_date)
-        raw_schedule = self.get_raw_schedule(
+        raw_schedule = get_schedule(
             login_code=login_code,
             start_year=parsed_dates["start_year"],
             start_month=parsed_dates["start_month"],
@@ -45,54 +44,6 @@ class Schedule:
         formatted_freetime = self.format_free_time(freetime=freetime)
         json_freetime = self.freetime_to_json(formatted_freetime)
         return json_freetime, final_relevant_names
-
-    def get_raw_schedule(
-        self,
-        login_code: str,
-        start_year: int,
-        start_month: int,
-        start_day: int,
-        days: int,
-    ) -> Tuple[list, pd.DataFrame]:
-        """
-        Requests data from Amion API
-
-        Args:
-            login_code: amion login_code ex: "chla"
-            start_year: Int of year to start query
-            start_month: Int of month to start query
-            start_day: Int of day to start query
-            days: Int of number of days from from start to complete search
-
-        Returns:
-            Pandas dataframe of raw schedule
-        """
-        cache_path = get_cache_path(
-            start_year=start_year,
-            start_month=start_month,
-            start_day=start_day,
-            days=days,
-        )
-        if os.path.isfile(cache_path):
-            print(f"reading from cache at {cache_path}")
-            cache_df = pd.read_csv(cache_path)
-            return cache_df
-
-        schedule_df = request_amion(
-            login_code=login_code,
-            start_year=start_year,
-            start_month=start_month,
-            start_day=start_day,
-            days=days,
-            return_dataframe=True,
-        )
-
-        # Write requested data to cache
-        outfile = open(cache_path, "wb")
-        schedule_df.to_csv(outfile)
-        outfile.close()
-
-        return schedule_df
 
     def clean_schedule(self, schedule: pd.DataFrame, names: list) -> pd.DataFrame:
         """
