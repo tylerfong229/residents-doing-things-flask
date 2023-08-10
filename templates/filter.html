@@ -11,6 +11,9 @@
         <div style="padding:10px 0px 10px 0px;">
             <input type="date" , id="end_date" name="end_date" value="{{ end_date }}" required>
         </div>
+        {% if date_err_message != "" %}
+        <p style="color:red">{{date_err_message}}</p>
+        {% endif %}
         <h2> with </h2>
         <div class="dropdown" style="padding:10px 0px 30px 0px;">
             <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1"
@@ -26,6 +29,9 @@
                 {% endfor %}
             </ul>
         </div>
+        {% if name_err_message != "" %}
+        <p style="color:red">{{name_err_message}}</p>
+        {% endif %}
         <p>
             <input type="submit" class="btn btn-success btn-lg px-4">
         </p>

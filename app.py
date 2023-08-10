@@ -32,15 +32,21 @@ def filter():
 
     # Set defaults
     start_date = dt.date.today().strftime("%Y-%m-%d")
+    end_date = (dt.date.today() + dt.timedelta(14)).strftime("%Y-%m-%d")
     name_options = get_unique_names(
         login_code=login_code,
         start_date=start_date,
         end_date=(dt.date.today() + dt.timedelta(90)).strftime("%Y-%m-%d"),
     )
+    name_err_message = ""
+    date_err_message = ""
+    err_ct = 0
 
     if request.method == "POST":
         start_date = request.form["start_date"]
+        start_date_dt = dt.datetime.strptime(start_date, "%Y-%m-%d")
         end_date = request.form["end_date"]
+        end_date_dt = dt.datetime.strptime(end_date, "%Y-%m-%d")
         names = request.form.getlist("names")
         session["start_date"] = start_date
         session["end_date"] = end_date
@@ -48,14 +54,22 @@ def filter():
         print(f"start_date: {start_date}")
         print(f"end_date: {end_date}")
         print(f"selected_names: {names}")
-
-        return redirect(url_for("availability"))
+        if start_date_dt >= end_date_dt:
+            date_err_message = "Start date must be before end date"
+            err_ct += 1
+        if len(names) == 0:
+            name_err_message = "Please select at least 1 person"
+            err_ct += 1
+        if err_ct == 0:
+            return redirect(url_for("availability"))
 
     return render_template(
         "filter.html",
         start_date=start_date,
-        end_date=(dt.date.today() + dt.timedelta(14)).strftime("%Y-%m-%d"),
+        end_date=end_date,
         name_options=name_options,
+        date_err_message=date_err_message,
+        name_err_message=name_err_message,
     )
 
 
