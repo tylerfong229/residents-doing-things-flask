@@ -3,15 +3,16 @@ import requests
 import datetime as dt
 import csv
 import os
+from typing import Tuple
 
 
 def request_amion(
     login_code: str,
-    return_dataframe: bool = False,
     start_year: int = 0,
     start_month: int = 0,
     start_day: int = 0,
     days: int = 0,
+    return_dataframe: bool = True,
 ):
     url_prefix = "http://www.amion.com/cgi-bin/ocs?"
     url = f"{url_prefix}Lo={login_code}&Rpt=619"
@@ -76,17 +77,25 @@ def parse_dates(start_date: str, end_date: str):
 
 
 def validate_login_code(login_code: str):
-    response = request_amion(login_code=login_code)
+    response = request_amion(login_code=login_code, return_dataframe=False)
     return "bad password" not in response.text.lower()
 
 
-def get_unique_names(login_code: str):
-    response_df = request_amion(login_code=login_code, return_dataframe=True)
+def get_unique_names(login_code: str, start_date: str, end_date: str):
+    parsed_dates = parse_dates(start_date=start_date, end_date=end_date)
+    response_df = get_schedule(
+        login_code=login_code,
+        start_year=parsed_dates["start_year"],
+        start_month=parsed_dates["start_month"],
+        start_day=parsed_dates["start_day"],
+        days=parsed_dates["days"],
+    )
     names = list(response_df.name.sort_values().unique())
     return names
 
 
 def get_cache_path(
+    login_code: str,
     start_year: int,
     start_month: int,
     start_day: int,
@@ -95,8 +104,56 @@ def get_cache_path(
     current_dir = os.path.dirname(os.path.abspath(__file__))
     prev_dir = "/".join(current_dir.split("/")[:-1])
     cache_prefix = f"{prev_dir}/_cache"
-    cache_path = (
-        f"{cache_prefix}/amion_cache_start={start_year}{start_month}{start_day}_days={days}.csv"
-    )
+    cache_path = f"{cache_prefix}/login={login_code}_start={start_year}{start_month}{start_day}_days={days}.csv"
     print(cache_path)
     return cache_path
+
+
+def get_schedule(
+    login_code: str,
+    start_year: int,
+    start_month: int,
+    start_day: int,
+    days: int,
+    return_dataframe: bool = True,
+) -> Tuple[list, pd.DataFrame]:
+    """
+    Requests data from Amion API
+
+    Args:
+        login_code: amion login_code ex: "chla"
+        start_year: Int of year to start query
+        start_month: Int of month to start query
+        start_day: Int of day to start query
+        days: Int of number of days from from start to complete search
+
+    Returns:
+        Pandas dataframe of raw schedule
+    """
+    cache_path = get_cache_path(
+        login_code=login_code,
+        start_year=start_year,
+        start_month=start_month,
+        start_day=start_day,
+        days=days,
+    )
+    if os.path.isfile(cache_path):
+        print(f"reading from cache at {cache_path}")
+        cache_df = pd.read_csv(cache_path)
+        return cache_df
+
+    schedule_df = request_amion(
+        login_code=login_code,
+        start_year=start_year,
+        start_month=start_month,
+        start_day=start_day,
+        days=days,
+        return_dataframe=return_dataframe,
+    )
+    print(f"schedule row count: {schedule_df.shape[0]}")
+    # Write requested data to cache
+    outfile = open(cache_path, "wb")
+    schedule_df.to_csv(outfile)
+    outfile.close()
+
+    return schedule_df

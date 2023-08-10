@@ -32,7 +32,11 @@ def filter():
 
     # Set defaults
     start_date = dt.date.today().strftime("%Y-%m-%d")
-    name_options = get_unique_names(login_code=login_code)
+    name_options = get_unique_names(
+        login_code=login_code,
+        start_date=start_date,
+        end_date=(dt.date.today() + dt.timedelta(90)).strftime("%Y-%m-%d"),
+    )
 
     if request.method == "POST":
         start_date = request.form["start_date"]
