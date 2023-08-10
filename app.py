@@ -4,7 +4,7 @@ from etl.utils import validate_login_code, get_unique_names
 from forms import AccessCodeForm
 import datetime as dt
 import numpy as np
-from utils.constants import Constants
+from defaults.constants import Constants
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "tylers-secret-key"
