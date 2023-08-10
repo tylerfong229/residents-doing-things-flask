@@ -43,10 +43,18 @@
                             </button>
                             <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
                                 {% for display_time, military_hr in possible_hours.items() %}
+                                {% if military_hr == start_time %}
+                                <li class="container-sm">
+                                    <input type="radio" id="{{military_hr}}" name="start_time" value="{{military_hr}}"
+                                        checked>
+                                    <label for="{{military_hr}}">{{display_time}}</label>
+                                </li>
+                                {% else %}
                                 <li class="container-sm">
                                     <input type="radio" id="{{military_hr}}" name="start_time" value="{{military_hr}}">
                                     <label for="{{military_hr}}">{{display_time}}</label>
                                 </li>
+                                {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
@@ -57,10 +65,18 @@
                             </button>
                             <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
                                 {% for display_time, military_hr in possible_hours.items() %}
+                                {% if military_hr == end_time %}
+                                <li class="container-sm">
+                                    <input type="radio" id="{{military_hr}}" name="end_time" value="{{military_hr}}"
+                                        checked>
+                                    <label for="{{military_hr}}">{{display_time}}</label>
+                                </li>
+                                {% else %}
                                 <li class="container-sm">
                                     <input type="radio" id="{{military_hr}}" name="end_time" value="{{military_hr}}">
                                     <label for="{{military_hr}}">{{display_time}}</label>
                                 </li>
+                                {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
