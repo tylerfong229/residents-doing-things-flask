@@ -1,16 +1,12 @@
 import pandas as pd
-import requests
-import csv
 from typing import Tuple
 import datetime as dt
 import os
+from etl.utils import parse_dates, request_amion, get_cache_path
 
 
 class Schedule:
-    def __init__(self):
-        pass
-
-    def run(
+    def find_availability(
         self,
         login_code: str,
         start_date: str,
@@ -20,8 +16,14 @@ class Schedule:
         end_time: str = "24",
     ):
         """Controller method to be called by model"""
-        # TODO: Handle no names
-        parsed_dates = self.parse_dates(start_date=start_date, end_date=end_date)
+        # Handle no names selected
+        if len(names) == 0:
+            json_freetime = {"ERROR: NO NAMES SELECTED": ""}
+            final_relevant_names = []
+            return json_freetime, final_relevant_names
+
+        # Find availability if names selected
+        parsed_dates = parse_dates(start_date=start_date, end_date=end_date)
         raw_schedule = self.get_raw_schedule(
             login_code=login_code,
             start_year=parsed_dates["start_year"],
@@ -44,53 +46,6 @@ class Schedule:
         json_freetime = self.freetime_to_json(formatted_freetime)
         return json_freetime, final_relevant_names
 
-    def get_unique_names(
-        self,
-        login_code: str,
-        start_date: str,
-        end_date: str,
-    ):
-        parsed_dates = self.parse_dates(start_date=start_date, end_date=end_date)
-
-        raw_schedule = self.get_raw_schedule(
-            login_code=login_code,
-            start_year=parsed_dates["start_year"],
-            start_month=parsed_dates["start_month"],
-            start_day=parsed_dates["start_day"],
-            days=parsed_dates["days"],
-        )
-        names = list(raw_schedule.name.sort_values().unique())
-        return names
-
-    def validate_login_code(self, login_code: str):
-        url_prefix = "http://www.amion.com/cgi-bin/ocs?"
-        url = f"{url_prefix}Lo={login_code}&Rpt=619"
-        response = requests.get(url=url, headers={"Connection": "close"})
-        return "bad password" not in response.text.lower()
-
-    def parse_dates(self, start_date, end_date):
-        """Converts input dates into usable data for API"""
-        start_date_dt = dt.datetime.strptime(start_date, "%Y-%m-%d")
-        end_date_dt = dt.datetime.strptime(end_date, "%Y-%m-%d")
-
-        syear = start_date_dt.year
-        smonth = start_date_dt.month
-        sday = start_date_dt.day
-        days = (end_date_dt - start_date_dt).days
-
-        if days < 0:
-            # TODO: Need to do error handling
-            pass
-
-        return {
-            "start_year": syear,
-            "start_month": smonth,
-            "start_day": sday,
-            "days": days,
-            "start_date": start_date_dt,
-            "end_date": end_date_dt,
-        }
-
     def get_raw_schedule(
         self,
         login_code: str,
@@ -112,42 +67,31 @@ class Schedule:
         Returns:
             Pandas dataframe of raw schedule
         """
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        prev_dir = "/".join(current_dir.split("/")[:-1])
-        cache_prefix = f"{prev_dir}/_cache"
-        cache_path = f"{cache_prefix}/amion_cache_start={start_year}{start_month}{start_day}_days={days}.csv"
-        print(cache_path)
+        cache_path = get_cache_path(
+            start_year=start_year,
+            start_month=start_month,
+            start_day=start_day,
+            days=days,
+        )
         if os.path.isfile(cache_path):
-            print("reading from cache")
-            return pd.read_csv(cache_path)
+            print(f"reading from cache at {cache_path}")
+            cache_df = pd.read_csv(cache_path)
+            return cache_df
 
-        url_prefix = "http://www.amion.com/cgi-bin/ocs?"
-        url = f"{url_prefix}Lo={login_code}&Rpt=619&Day={str(start_day)}&Month={str(start_month)}&Year={str(start_year)}&Days={str(days)}"
-        print(f"url: {url}")
-        response = requests.get(url=url, headers={"Connection": "close"})
-        raw_schedule_list = response.text.split("\n")[6:]
+        schedule_df = request_amion(
+            login_code=login_code,
+            start_year=start_year,
+            start_month=start_month,
+            start_day=start_day,
+            days=days,
+            return_dataframe=True,
+        )
 
-        schedule_cols = [
-            "name",
-            "name_id1",
-            "name_id2",
-            "team",
-            "team_id1",
-            "team_id2",
-            "date",
-            "start_time",
-            "end_time",
-        ]
-
-        df_list = []
-        for row in csv.reader(raw_schedule_list, delimiter=","):
-            if len(row) > 0:
-                df_list.append(row)
-        schedule_df = pd.DataFrame(df_list, columns=schedule_cols)
-        print(f"requested schedule from API row count: {schedule_df.shape[0]}")
+        # Write requested data to cache
         outfile = open(cache_path, "wb")
         schedule_df.to_csv(outfile)
         outfile.close()
+
         return schedule_df
 
     def clean_schedule(self, schedule: pd.DataFrame, names: list) -> pd.DataFrame:
@@ -193,8 +137,8 @@ class Schedule:
         schedule_no_ids.loc[
             schedule_no_ids["start_time"] >= schedule_no_ids["end_time"], "end_time"
         ] = schedule_no_ids["end_time"] + dt.timedelta(days=1)
-
-        return schedule_no_ids[["name", "team", "start_time", "end_time"]]
+        schedule_no_ids = schedule_no_ids[["name", "team", "start_time", "end_time"]]
+        return schedule_no_ids
 
     def find_free_time(
         self,
@@ -226,7 +170,6 @@ class Schedule:
             working_hours = schedule.copy()
             working_hours["start_time"] = pd.to_datetime(working_hours["start_time"])
             working_hours["end_time"] = pd.to_datetime(working_hours["end_time"])
-            print(working_hours)
             working_hours["hour"] = working_hours.apply(
                 lambda row: pd.date_range(row["start_time"], row["end_time"], freq="H"), axis=1
             )
@@ -379,4 +322,6 @@ class Schedule:
             else:
                 availabilities[r["date"]].append(free_time_detail)
                 prev_date = r["date"]
+        print("\nAvailabilities:")
+        print(availabilities)
         return availabilities
