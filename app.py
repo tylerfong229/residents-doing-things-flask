@@ -16,25 +16,23 @@ def homepage():
     form = AccessCodeForm()
     error_message = ""
     if form.is_submitted():
-        login_code = request.form.get("accesscode").lower()
-        print(f"LOGIN_CODE: {login_code}")
-        session["accesscode"] = login_code
-        if validate_login_code(login_code=login_code):
-            return redirect(url_for("filter"))
-        error_message = f"The access code {login_code} is not a valid Amion Access Code"
+        access_code = request.form.get("accesscode").lower()
+        session["access_code"] = access_code
+        print(f"ACCESS_CODE: {access_code}")
+        if validate_login_code(login_code=access_code):
+            return redirect(url_for("filter", access_code=access_code))
+        error_message = f"The access code {access_code} is not a valid Amion Access Code"
 
     return render_template("home.html", form=form, error_message=error_message)
 
 
-@app.route("/filter", methods=["GET", "POST"])
-def filter():
-    login_code = session.get("accesscode", None)
-
+@app.route("/filter/access_code=<access_code>", methods=["GET", "POST"])
+def filter(access_code):
     # Set defaults
     start_date = dt.date.today().strftime("%Y-%m-%d")
     end_date = (dt.date.today() + dt.timedelta(14)).strftime("%Y-%m-%d")
     name_options = get_unique_names(
-        login_code=login_code,
+        login_code=access_code,
         start_date=start_date,
         end_date=(dt.date.today() + dt.timedelta(90)).strftime("%Y-%m-%d"),
     )
@@ -61,7 +59,16 @@ def filter():
             name_err_message = "Please select at least 1 person"
             err_ct += 1
         if err_ct == 0:
-            return redirect(url_for("availability"))
+            selected_names_str = "&".join(names).replace(",", "").replace(" ", "")
+            return redirect(
+                url_for(
+                    "availability",
+                    access_code=access_code,
+                    start_date=start_date,
+                    end_date=end_date,
+                    selected_names_str=selected_names_str,
+                )
+            )
 
     return render_template(
         "filter.html",
@@ -73,11 +80,11 @@ def filter():
     )
 
 
-@app.route("/availability", methods=["GET", "POST"])
-def availability():
-    login_code = session.get("accesscode", None)
-    start_date = session.get("start_date", None)
-    end_date = session.get("end_date", None)
+@app.route(
+    "/availability/access_code=<access_code>&start_date=<start_date>&end_date=<end_date>&names=<selected_names_str>",
+    methods=["GET", "POST"],
+)
+def availability(access_code, start_date, end_date, selected_names_str):
     names = session.get("selected_names", None)
     start_time = 0
     end_time = 24
@@ -88,7 +95,7 @@ def availability():
 
     # Filter data and pass as args into html
     availabilities, final_relevant_names = Schedule().find_availability(
-        login_code=login_code,
+        login_code=access_code,
         start_date=start_date,
         end_date=end_date,
         start_time=start_time,
@@ -97,10 +104,11 @@ def availability():
     )
 
     if len(availabilities) == 0:
-        return redirect(url_for("no_freetime"))
+        return redirect(url_for("no_freetime", access_code=access_code))
 
     return render_template(
         "hourly_availability.html",
+        access_code=access_code,
         availabilities=availabilities,
         hours=list(np.arange(24)),
         names=final_relevant_names,
@@ -112,6 +120,6 @@ def availability():
     )
 
 
-@app.route("/no_freetime", methods=["GET", "POST"])
-def no_freetime():
-    return render_template("no_freetime.html")
+@app.route("/no_freetime/access_code=<access_code>", methods=["GET", "POST"])
+def no_freetime(access_code):
+    return render_template("no_freetime.html", access_code=access_code)

@@ -7,7 +7,8 @@
     <div style="padding:100px 0px 0px 5px;">
         <h1>Looks like there's no free time for the given search. &#128556; &#128557; &#128148;</h1>
         <br>
-        <a class="btn btn-primary" role="button" href="{{ url_for('filter') }}">Try to find another time</a>
+        <a class="btn btn-primary" role="button" href="{{ url_for('filter', access_code=access_code) }}">Try to find
+            another time</a>
     </div>
 </main>
 

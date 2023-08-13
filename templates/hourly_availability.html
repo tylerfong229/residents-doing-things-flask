@@ -7,7 +7,7 @@
         <h1>Hourly availability between <span span style="color:#146DC6; font-weight: bold;">{{start_date}}</span> and
             <span style="color:#146DC6; font-weight: bold;">{{end_date}}</span>.
         </h1>
-
+        <p></p>
         <p>
             <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseSelectedNames" role="button"
                 aria-expanded="false" aria-controls="collapseSelectedNames">
@@ -17,7 +17,8 @@
                 aria-expanded="false" aria-controls="collapseFilters">
                 Filter Times
             </button>
-            <a class="btn btn-success" role="button" href="{{ url_for('filter') }}">New Search</a>
+            <a class="btn btn-success" role="button" href="{{ url_for('filter', access_code=access_code ) }}">New
+                Search</a>
         </p>
         <div class="collapse" id="collapseSelectedNames">
             <div class="card card-body">
