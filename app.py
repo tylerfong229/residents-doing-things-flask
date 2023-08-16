@@ -78,6 +78,7 @@ def filter(access_code, staff_type):
                         start_date=start_date,
                         end_date=end_date,
                         selected_names_str=selected_names_str,
+                        staff_type=staff_type,
                     )
                 )
 
@@ -94,10 +95,10 @@ def filter(access_code, staff_type):
 
 
 @app.route(
-    "/availability/access_code=<access_code>&start_date=<start_date>&end_date=<end_date>&names=<selected_names_str>",
+    "/availability/access_code=<access_code>&start_date=<start_date>&end_date=<end_date>&names=<selected_names_str>&staff_type=<staff_type>",
     methods=["GET", "POST"],
 )
-def availability(access_code, start_date, end_date, selected_names_str):
+def availability(access_code, start_date, end_date, selected_names_str, staff_type):
     names = session.get("selected_names", None)
     start_time = 0
     end_time = 24
@@ -117,7 +118,7 @@ def availability(access_code, start_date, end_date, selected_names_str):
     )
 
     if len(availabilities) == 0:
-        return redirect(url_for("no_freetime", access_code=access_code))
+        return redirect(url_for("no_freetime", access_code=access_code, staff_type=staff_type))
 
     return render_template(
         "hourly_availability.html",
@@ -130,9 +131,13 @@ def availability(access_code, start_date, end_date, selected_names_str):
         possible_hours=Constants().possible_hours,
         start_time=int(start_time),
         end_time=int(end_time),
+        staff_type=staff_type,
     )
 
 
-@app.route("/no_freetime/access_code=<access_code>", methods=["GET", "POST"])
-def no_freetime(access_code):
-    return render_template("no_freetime.html", access_code=access_code)
+@app.route(
+    "/no_freetime/access_code=<access_code>&staff_type=<staff_type>",
+    methods=["GET", "POST"],
+)
+def no_freetime(access_code, staff_type):
+    return render_template("no_freetime.html", access_code=access_code, staff_type=staff_type)
