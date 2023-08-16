@@ -2,6 +2,7 @@ import pandas as pd
 
 import datetime as dt
 from etl.utils import parse_dates, get_schedule
+from defaults.constants import Constants
 
 
 class Schedule:
@@ -58,7 +59,10 @@ class Schedule:
             Schedule dataframe cleaned and formatted
         """
 
-        schedule_no_ids = schedule[["name", "team", "date", "start_time", "end_time"]].copy()
+        schedule_no_ids = schedule[
+            (schedule["grouping"].isin(["On Call", "Clinic"]))
+            & (schedule["staff_type"].isin(Constants().allowed_staff_types))
+        ][["name", "team", "date", "start_time", "end_time"]].copy()
         if len(names) > 0:
             schedule_no_ids = schedule_no_ids[schedule_no_ids["name"].isin(names)]
         schedule_no_ids["date"] = pd.to_datetime(schedule_no_ids["date"], format="%m-%d-%y")

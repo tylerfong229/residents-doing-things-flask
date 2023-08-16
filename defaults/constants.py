@@ -27,3 +27,5 @@ class Constants:
             "11:00 PM": 23,
             "11:59 PM": 24,
         }
+
+        self.allowed_staff_types = ["PGY-1", "PGY-2", "PGY-3"]

@@ -4,6 +4,7 @@ import datetime as dt
 import csv
 import os
 from typing import Tuple
+from defaults.constants import Constants
 
 
 def request_amion(
@@ -15,7 +16,7 @@ def request_amion(
     return_dataframe: bool = True,
 ):
     url_prefix = "http://www.amion.com/cgi-bin/ocs?"
-    url = f"{url_prefix}Lo={login_code}&Rpt=619"
+    url = f"{url_prefix}Lo={login_code}&Rpt=625c"
     if start_year != 0:
         url = (
             url
@@ -25,7 +26,7 @@ def request_amion(
     response = requests.get(url=url, headers={"Connection": "close"})
 
     if return_dataframe:
-        raw_schedule_list = response.text.split("\n")[6:]
+        raw_schedule_list = response.text.split("\n")[7:]
 
         schedule_cols = [
             "name",
@@ -37,6 +38,14 @@ def request_amion(
             "date",
             "start_time",
             "end_time",
+            "staff_type",
+            "pager_number",
+            "tel_extension",
+            "email",
+            "col1",
+            "col2",
+            "col3",
+            "grouping",
         ]
 
         df_list = []
@@ -44,10 +53,19 @@ def request_amion(
             if len(row) > 0:
                 df_list.append(row)
         schedule_df = pd.DataFrame(df_list, columns=schedule_cols)
-        print("Raw Schedule DF:")
-        print(schedule_df)
         print(f"requested schedule from API row count: {schedule_df.shape[0]}")
-        return schedule_df
+
+        return schedule_df[
+            [
+                "name",
+                "team",
+                "date",
+                "staff_type",
+                "start_time",
+                "end_time",
+                "grouping",
+            ]
+        ]
 
     return response
 
@@ -90,7 +108,11 @@ def get_unique_names(login_code: str, start_date: str, end_date: str):
         start_day=parsed_dates["start_day"],
         days=parsed_dates["days"],
     )
-    names = list(response_df.name.sort_values().unique())
+    names = list(
+        response_df[response_df["staff_type"].isin(Constants().allowed_staff_types)]
+        .name.sort_values()
+        .unique()
+    )
     return names
 
 
