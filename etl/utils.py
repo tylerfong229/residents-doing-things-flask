@@ -99,7 +99,12 @@ def validate_login_code(login_code: str):
     return "bad password" not in response.text.lower()
 
 
-def get_unique_names(login_code: str, start_date: str, end_date: str):
+def get_unique_names(
+    login_code: str,
+    start_date: str,
+    end_date: str,
+    staff_types: str = "All",
+):
     parsed_dates = parse_dates(start_date=start_date, end_date=end_date)
     response_df = get_schedule(
         login_code=login_code,
@@ -108,10 +113,14 @@ def get_unique_names(login_code: str, start_date: str, end_date: str):
         start_day=parsed_dates["start_day"],
         days=parsed_dates["days"],
     )
+
+    if staff_types == "All":
+        staff_types = Constants().allowed_staff_types
+    else:
+        staff_types = [staff_types]
+
     names = list(
-        response_df[response_df["staff_type"].isin(Constants().allowed_staff_types)]
-        .name.sort_values()
-        .unique()
+        response_df[response_df["staff_type"].isin(staff_types)].name.sort_values().unique()
     )
     return names
 

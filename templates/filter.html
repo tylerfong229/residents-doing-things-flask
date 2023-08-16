@@ -15,25 +15,65 @@
         <p style="color:red">{{date_err_message}}</p>
         {% endif %}
         <h2> with </h2>
-        <div class="dropdown" style="padding:10px 0px 30px 0px;">
-            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                Names
-            </button>
-            <ul class="dropdown-menu" style="max-height: 200px; overflow: auto;">
-                {% for name in name_options %}
-                <li class="container-sm">
-                    <input type="checkbox" id="{{ name }}" name="names" value="{{ name }}">
-                    <label for="{{ name }}">{{ name }}</label>
-                </li>
-                {% endfor %}
-            </ul>
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="dropdown" style="padding:10px 0px 30px 0px;">
+                <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Names
+                </button>
+                <ul class="dropdown-menu" style="max-height: 200px; overflow: auto; white-space: nowrap;">
+                    {% for name in name_options %}
+                    <li class="container-sm">
+                        <input type="checkbox" id="{{ name }}" name="names" value="{{ name }}">
+                        <label for="{{ name }}">{{ name }}</label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="dropdown" style="padding:10px 0px 30px 10px;">
+                <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Staff Type
+                </button>
+                <ul class="dropdown-menu" style="max-height: 200px; overflow: auto; white-space: nowrap;">
+                    {% if staff_type == "All" %}
+                    <li class="container-sm">
+                        <input type="radio" id="All" name="staff_types" value="All" checked>
+                        <label for="All">All</label>
+                    </li>
+                    {% else %}
+                    <li class="container-sm">
+                        <input type="radio" id="All" name="staff_types" value="All">
+                        <label for="All">All</label>
+                    </li>
+                    {% endif %}
+                    {% for possible_staff_type in possible_staff_types %}
+                    {% if staff_type == possible_staff_type %}
+                    <li class="container-sm">
+                        <input type="radio" id="{{possible_staff_type}}" name="staff_types"
+                            value="{{possible_staff_type}}" checked>
+                        <label for="{{possible_staff_type}}">{{possible_staff_type}}</label>
+                    </li>
+                    {% else %}
+                    <li class="container-sm">
+                        <input type="radio" id="{{possible_staff_type}}" name="staff_types"
+                            value="{{possible_staff_type}}">
+                        <label for="{{possible_staff_type}}">{{possible_staff_type}}</label>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    <li class="container-sm">
+                        <input type="submit" name="submit_button" value="Refresh" class="btn btn-secondary btn-sm px-4">
+                    </li>
+                </ul>
+            </div>
         </div>
         {% if name_err_message != "" %}
         <p style="color:red">{{name_err_message}}</p>
         {% endif %}
         <p>
-            <input type="submit" class="btn btn-success btn-lg px-4">
+            <input type="submit" name="submit_button" class="btn btn-success btn-lg px-4">
         </p>
     </form>
 </div>
