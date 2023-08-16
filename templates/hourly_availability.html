@@ -17,7 +17,8 @@
                 aria-expanded="false" aria-controls="collapseFilters">
                 Filter Times
             </button>
-            <a class="btn btn-success" role="button" href="{{ url_for('filter', access_code=access_code ) }}">New
+            <a class="btn btn-success" role="button"
+                href="{{ url_for('filter', access_code=access_code, staff_type=staff_type ) }}">New
                 Search</a>
         </p>
         <div class="collapse" id="collapseSelectedNames">
